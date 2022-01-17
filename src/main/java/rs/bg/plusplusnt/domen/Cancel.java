@@ -124,4 +124,9 @@ public class Cancel implements IPacket {
     public boolean hasExpired() {
         return System.currentTimeMillis() > packetExpiration;
     }
+
+    @Override
+    public void setNewDelay() {
+        
+    }
 }

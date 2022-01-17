@@ -95,12 +95,19 @@ public class Dummy implements IPacket {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append('[');
         for (int i = 0; i < packetArray.length; i++) {
-            if (i % 4 == 0) {
+            if (i % 4 == 0 && i!=0) {
+                stringBuilder.append(']');
                 stringBuilder.append('\t');
+                stringBuilder.append('[');
             }
-            stringBuilder.append(packetArray[i] + " ");
+            stringBuilder.append(packetArray[i]).append(" ");
         }
+        stringBuilder.append(']');
+        stringBuilder.append(" ID:").append(id);
+        stringBuilder.append(" Expiration time: ").append(packetExpiration);
+        stringBuilder.append(" Current time: ").append(System.currentTimeMillis());
         return stringBuilder.toString();
     }
 
@@ -122,9 +129,15 @@ public class Dummy implements IPacket {
 
     @Override
     public boolean hasExpired() {
-        System.out.println("*****" + System.currentTimeMillis() + "*****");
-        System.out.println("*****" + packetExpiration + "*****");
         return System.currentTimeMillis() > packetExpiration;
+    }
+
+    @Override
+    public void setNewDelay() {
+        long currentTimeMillis = System.currentTimeMillis();
+        int sekunde = (int) (packetExpiration - currentTimeMillis) / 1000;
+        //int stotinke = (int) (packetExpiration - currentTimeMillis) % 1000;
+        setDelay(sekunde+1);
     }
 
 }

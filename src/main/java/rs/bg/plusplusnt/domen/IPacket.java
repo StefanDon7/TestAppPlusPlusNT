@@ -44,4 +44,6 @@ public interface IPacket {
     byte[] createBytePacket();
 
     boolean hasExpired();
+    
+    void setNewDelay();
 }

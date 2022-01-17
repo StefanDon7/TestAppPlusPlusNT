@@ -20,12 +20,14 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         List<IPacket> lista = ControllerDB.getInstance().getAll();
-        for (IPacket iPacket : lista) {
-            if (iPacket.hasExpired()) {
-                CommunitationWithServer.getInstance().sendMessageToServer(iPacket);
-                ControllerDB.getInstance().deletePacket(iPacket);
+        for (IPacket packet : lista) {
+            if (packet.hasExpired()) {
+                CommunitationWithServer.getInstance().sendMessageToServer(packet);
+                ControllerDB.getInstance().deletePacket(packet);
             } else {
-                CommunitationWithServer.getInstance().addToQueue(iPacket);
+                CommunitationWithServer.getInstance().addToQueue(packet);
+                packet.setNewDelay();
+                System.out.println("Packet with id:" + packet.getID() + " add to queue.");
             }
         }
         CommunitationWithServer.getInstance().start();
