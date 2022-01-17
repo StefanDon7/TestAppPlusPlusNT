@@ -12,7 +12,7 @@ import rs.bg.plusplusnt.convertor.Convertor;
 import rs.bg.plusplusnt.db.controller.ControllerDB;
 import rs.bg.plusplusnt.domen.Packet;
 import rs.bg.plusplusnt.domen.Type;
-import rs.bg.plusplusnt.threadpool.ThreadPoolExecutorThread;
+import rs.bg.plusplusnt.threadpool.ChargerThreadPool;
 
 /**
  *
@@ -20,8 +20,8 @@ import rs.bg.plusplusnt.threadpool.ThreadPoolExecutorThread;
  */
 public class PacketMaker {
 
+    private ByteHandler byteHandler = new ByteHandler();
     private Packet packet;
-    private ByteHandler byteHandler=new ByteHandler();
 
     public PacketMaker() {
     }
@@ -64,26 +64,23 @@ public class PacketMaker {
         allocationBuffer();
         setAllAtributes();
         ControllerDB.getInstance().savePacket(getPacket());
-        ThreadPoolExecutorThread.getInstance().getThreadPoolExecutor().addToQueue(getPacket());
+        ChargerThreadPool.getInstance().getThreadPool().addToQueue(getPacket());
     }
 
     public void allocationBuffer() throws IOException {
         CommunicationWithServerThread.getInstance().getCommunicationWithServer().getBytesArrayFromServer(byteHandler.getHeader());
         int packetID = Convertor.byteArraytoIntLE(byteHandler.getHeader());
-        switch (packetID) {
+        packet = new Packet();
+        packet.setPacketID(packetID);
+        switch (packet.getPacketID()) {
             case 1:
-                System.out.println("*****Dummy paket*****");
                 byteHandler.setFull(16);
-                packet = new Packet();
                 packet.setType(Type.Dummy);
-                packet.setPacketID(packetID);
                 break;
             case 2:
-                System.out.println("*****Cancel paket*****");
                 byteHandler.setFull(12);
                 packet = new Packet();
                 packet.setType(Type.Cancel);
-                packet.setPacketID(packetID);
                 break;
             default:
         }

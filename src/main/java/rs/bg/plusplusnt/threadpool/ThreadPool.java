@@ -16,12 +16,12 @@ import rs.bg.plusplusnt.domen.runnable.PacketRunnable;
  *
  * @author Stefan
  */
-public class ThreadPoolExecutor {
+public class ThreadPool {
 
     private final BlockingQueue<PacketRunnable> queue = new ArrayBlockingQueue<>(50);
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(15);
 
-    public ThreadPoolExecutor() {
+    public ThreadPool() {
     }
 
     public ScheduledExecutorService getScheduledExecutorService() {
@@ -31,8 +31,9 @@ public class ThreadPoolExecutor {
     public BlockingQueue<PacketRunnable> getQueue() {
         return queue;
     }
-   public void addToQueue(Packet packet) {
-        ThreadPoolExecutorThread.getInstance().getThreadPoolExecutor().getQueue().add(new PacketRunnable(packet));
+
+    public void addToQueue(Packet packet) {
+        ChargerThreadPool.getInstance().getThreadPool().getQueue().add(new PacketRunnable(packet));
     }
 
 }

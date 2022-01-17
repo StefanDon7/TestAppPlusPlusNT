@@ -6,9 +6,9 @@
 package rs.bg.plusplusnt.db.controller;
 
 import java.util.List;
-import rs.bg.plusplusnt.db.IDBPacket;
-import rs.bg.plusplusnt.db.MySqlDbBrocker;
+import rs.bg.plusplusnt.db.MySQLBrocker;
 import rs.bg.plusplusnt.domen.Packet;
+import rs.bg.plusplusnt.db.DBService;
 
 /**
  *
@@ -17,10 +17,10 @@ import rs.bg.plusplusnt.domen.Packet;
 public class ControllerDB {
 
     private final static ControllerDB instance = new ControllerDB();
-    private IDBPacket mySqlDbBrocker;
+    private DBService mySqlDbBrocker;
 
     private ControllerDB() {
-        mySqlDbBrocker = new MySqlDbBrocker();
+        mySqlDbBrocker = new MySQLBrocker();
     }
 
     public static ControllerDB getInstance() {

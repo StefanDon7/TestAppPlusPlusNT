@@ -10,7 +10,7 @@ import java.util.List;
 import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
 import rs.bg.plusplusnt.db.controller.ControllerDB;
 import rs.bg.plusplusnt.domen.Packet;
-import rs.bg.plusplusnt.threadpool.ThreadPoolExecutorThread;
+import rs.bg.plusplusnt.threadpool.ChargerThreadPool;
 
 /**
  *
@@ -25,12 +25,11 @@ public class Main {
                 CommunicationWithServerThread.getInstance().getCommunicationWithServer().sendMessageToServer(packet);
                 ControllerDB.getInstance().deletePacket(packet);
             } else {
-                ThreadPoolExecutorThread.getInstance().getThreadPoolExecutor().addToQueue(packet);
-                packet.setNewDelay();
+                ChargerThreadPool.getInstance().getThreadPool().addToQueue(packet);
                 System.out.println("Packet with id:" + packet.getID() + " add to queue.");
             }
         }
         CommunicationWithServerThread.getInstance().start();
-        ThreadPoolExecutorThread.getInstance().start();
+        ChargerThreadPool.getInstance().start();
     }
 }

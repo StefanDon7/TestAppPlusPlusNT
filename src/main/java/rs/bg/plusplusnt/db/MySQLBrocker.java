@@ -22,11 +22,15 @@ import rs.bg.plusplusnt.domen.Type;
  *
  * @author Stefan
  */
-public class MySqlDbBrocker implements IDBPacket {
+public class MySQLBrocker implements DBService {
 
     private Connection connection;
 
-    public MySqlDbBrocker() {
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public MySQLBrocker() {
         loadDriver();
         openConnection();
     }
@@ -35,7 +39,7 @@ public class MySqlDbBrocker implements IDBPacket {
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(MySqlDbBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -44,7 +48,7 @@ public class MySqlDbBrocker implements IDBPacket {
             connection = DriverManager.getConnection("jdbc:mysql://localhost/plusplusnt", "root", "");
             connection.setAutoCommit(false);
         } catch (SQLException ex) {
-            Logger.getLogger(MySqlDbBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -52,7 +56,7 @@ public class MySqlDbBrocker implements IDBPacket {
         try {
             connection.commit();
         } catch (SQLException ex) {
-            Logger.getLogger(MySqlDbBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -60,7 +64,7 @@ public class MySqlDbBrocker implements IDBPacket {
         try {
             connection.rollback();
         } catch (SQLException ex) {
-            Logger.getLogger(MySqlDbBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -68,7 +72,7 @@ public class MySqlDbBrocker implements IDBPacket {
         try {
             connection.close();
         } catch (SQLException ex) {
-            Logger.getLogger(MySqlDbBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -80,7 +84,7 @@ public class MySqlDbBrocker implements IDBPacket {
         try {
             statement = connection.createStatement();
         } catch (SQLException ex) {
-            Logger.getLogger(MySqlDbBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             ResultSet rs = statement.executeQuery(query);
@@ -95,7 +99,7 @@ public class MySqlDbBrocker implements IDBPacket {
 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(MySqlDbBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
         return list;
     }
@@ -107,7 +111,7 @@ public class MySqlDbBrocker implements IDBPacket {
         try {
             preparedStatement = connection.prepareStatement(query);
         } catch (SQLException ex) {
-            Logger.getLogger(MySqlDbBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             preparedStatement.setInt(1, packet.getID());
@@ -116,7 +120,7 @@ public class MySqlDbBrocker implements IDBPacket {
             preparedStatement.setInt(4, packet.getDelay());
             preparedStatement.setLong(5, packet.getPacketExpiration());
         } catch (SQLException ex) {
-            Logger.getLogger(MySqlDbBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             preparedStatement.execute();
@@ -133,12 +137,12 @@ public class MySqlDbBrocker implements IDBPacket {
         try {
             preparedStatement = connection.prepareStatement(query);
         } catch (SQLException ex) {
-            Logger.getLogger(MySqlDbBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             preparedStatement.setInt(1, packet.getID());
         } catch (SQLException ex) {
-            Logger.getLogger(MySqlDbBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             preparedStatement.execute();
@@ -151,7 +155,7 @@ public class MySqlDbBrocker implements IDBPacket {
     }
 
     private Packet createPacket(int packetID, int length, int id, int delay, long packetExpiration) {
-        Packet packet = new Packet();
+        Packet packet = new Packet(packetID, length, id, delay, packetExpiration);
         switch (packetID) {
             case 1:
                 packet.setType(Type.Dummy);
@@ -161,13 +165,7 @@ public class MySqlDbBrocker implements IDBPacket {
                 break;
             default:
                 break;
-
         }
-        packet.setID(id);
-        packet.setLength(length);
-        packet.setPacketID(packetID);
-        packet.setDelay(delay);
-        packet.setPacketExpiration(packetExpiration);
         packet.setPacketArray(packet.createBytePacket());
         System.out.println(packet.toString());
         return packet;

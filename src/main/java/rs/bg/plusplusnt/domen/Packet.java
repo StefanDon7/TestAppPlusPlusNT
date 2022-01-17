@@ -25,6 +25,14 @@ public class Packet {
     public Packet() {
     }
 
+    public Packet(int packetID, int length, int id, int delay, long packetExpiration) {
+        this.packetID = packetID;
+        this.length = length;
+        this.id = id;
+        this.delay = delay;
+        this.packetExpiration = packetExpiration;
+    }
+
     public byte[] getPacketArray() {
         return packetArray;
     }
@@ -97,6 +105,7 @@ public class Packet {
         stringBuilder.append(" ID:").append(id);
         stringBuilder.append(" Expiration time: ").append(packetExpiration);
         stringBuilder.append(" Current time: ").append(System.currentTimeMillis());
+        stringBuilder.append(" Type: ").append(type);
         return stringBuilder.toString();
     }
 
@@ -118,11 +127,8 @@ public class Packet {
         return System.currentTimeMillis() > packetExpiration;
     }
 
-    public void setNewDelay() {
-        long currentTimeMillis = System.currentTimeMillis();
-        int sekunde = (int) (packetExpiration - currentTimeMillis) / 1000;
-        //int stotinke = (int) (packetExpiration - currentTimeMillis) % 1000;
-        setDelay(sekunde + 1);
+    public long getTimeToExecute() {
+        return packetExpiration - System.currentTimeMillis();
     }
 
 }

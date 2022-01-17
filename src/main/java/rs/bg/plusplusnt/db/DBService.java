@@ -15,7 +15,7 @@ import rs.bg.plusplusnt.domen.Packet;
  *
  * @author Stefan
  */
-public interface IDBPacket {
+public interface DBService {
     List<Packet> getAll();
     void savePacket(Packet packet);
     void deletePacket(Packet packet);
