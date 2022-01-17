@@ -12,7 +12,7 @@ import rs.bg.plusplusnt.convertor.Convertor;
  *
  * @author Stefan
  */
-public class Dummy implements IPacket {
+public class Packet {
 
     private byte[] packetArray;
     private int packetID;
@@ -22,74 +22,63 @@ public class Dummy implements IPacket {
     private long packetExpiration;
     private Type type;
 
-    @Override
+    public Packet() {
+    }
+
     public byte[] getPacketArray() {
         return packetArray;
     }
 
-    @Override
     public void setPacketArray(byte[] packetArray) {
         this.packetArray = packetArray;
     }
 
-    @Override
     public int getPacketID() {
         return packetID;
     }
 
-    @Override
     public void setPacketID(int packetID) {
         this.packetID = packetID;
     }
 
-    @Override
     public int getLength() {
         return length;
     }
 
-    @Override
     public void setLength(int length) {
         this.length = length;
     }
 
-    @Override
     public int getID() {
         return id;
     }
 
-    @Override
     public void setID(int id) {
         this.id = id;
     }
 
-    @Override
     public int getDelay() {
         return delay;
     }
 
-    @Override
     public void setDelay(int delay) {
         this.delay = delay;
     }
 
-    @Override
     public long getPacketExpiration() {
         return packetExpiration;
     }
 
-    @Override
     public void setPacketExpiration(long packetExpiration) {
         this.packetExpiration = packetExpiration;
     }
 
-    @Override
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    @Override
     public Type getType() {
         return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     @Override
@@ -97,7 +86,7 @@ public class Dummy implements IPacket {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append('[');
         for (int i = 0; i < packetArray.length; i++) {
-            if (i % 4 == 0 && i!=0) {
+            if (i % 4 == 0 && i != 0) {
                 stringBuilder.append(']');
                 stringBuilder.append('\t');
                 stringBuilder.append('[');
@@ -111,12 +100,10 @@ public class Dummy implements IPacket {
         return stringBuilder.toString();
     }
 
-    @Override
     public long createPacketExpiration(int delay) {
         return System.currentTimeMillis() + delay * 1000;
     }
 
-    @Override
     public byte[] createBytePacket() {
         byte[] bytes = new byte[length];
         ByteBuffer buff = ByteBuffer.wrap(bytes);
@@ -127,17 +114,15 @@ public class Dummy implements IPacket {
         return bytes;
     }
 
-    @Override
     public boolean hasExpired() {
         return System.currentTimeMillis() > packetExpiration;
     }
 
-    @Override
     public void setNewDelay() {
         long currentTimeMillis = System.currentTimeMillis();
         int sekunde = (int) (packetExpiration - currentTimeMillis) / 1000;
         //int stotinke = (int) (packetExpiration - currentTimeMillis) % 1000;
-        setDelay(sekunde+1);
+        setDelay(sekunde + 1);
     }
 
 }

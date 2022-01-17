@@ -1,7 +1,7 @@
 package rs.bg.plusplusnt.db;
 
 import java.util.List;
-import rs.bg.plusplusnt.domen.IPacket;
+import rs.bg.plusplusnt.domen.Packet;
 
 
 
@@ -16,7 +16,7 @@ import rs.bg.plusplusnt.domen.IPacket;
  * @author Stefan
  */
 public interface IDBPacket {
-    List<IPacket> getAll();
-    void savePacket(IPacket packet);
-    void deletePacket(IPacket packet);
+    List<Packet> getAll();
+    void savePacket(Packet packet);
+    void deletePacket(Packet packet);
 }

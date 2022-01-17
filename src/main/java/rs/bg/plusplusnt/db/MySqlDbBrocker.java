@@ -15,9 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import rs.bg.plusplusnt.domen.Cancel;
-import rs.bg.plusplusnt.domen.Dummy;
-import rs.bg.plusplusnt.domen.IPacket;
+import rs.bg.plusplusnt.domen.Packet;
+import rs.bg.plusplusnt.domen.Type;
 
 /**
  *
@@ -74,9 +73,9 @@ public class MySqlDbBrocker implements IDBPacket {
     }
 
     @Override
-    public List<IPacket> getAll() {
+    public List<Packet> getAll() {
         String query = "select * from packet";
-        List<IPacket> list = new ArrayList();
+        List<Packet> list = new ArrayList();
         Statement statement = null;
         try {
             statement = connection.createStatement();
@@ -91,7 +90,7 @@ public class MySqlDbBrocker implements IDBPacket {
                 int packetID = rs.getInt("packetid");
                 int delay = rs.getInt("delay");
                 long packetExpiration = rs.getLong("packetExpiration");
-                IPacket packet = createPacket(packetID, length, id, delay, packetExpiration);
+                Packet packet = createPacket(packetID, length, id, delay, packetExpiration);
                 list.add(packet);
 
             }
@@ -102,7 +101,7 @@ public class MySqlDbBrocker implements IDBPacket {
     }
 
     @Override
-    public void savePacket(IPacket packet) {
+    public void savePacket(Packet packet) {
         String query = "insert into packet (id, lengthPacket, packetid, delay, packetExpiration) values (?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = null;
         try {
@@ -128,7 +127,7 @@ public class MySqlDbBrocker implements IDBPacket {
     }
 
     @Override
-    public void deletePacket(IPacket packet) {
+    public void deletePacket(Packet packet) {
         String query = "delete from packet where id = ?";
         PreparedStatement preparedStatement = null;
         try {
@@ -151,16 +150,15 @@ public class MySqlDbBrocker implements IDBPacket {
 
     }
 
-    private IPacket createPacket(int packetID, int length, int id, int delay, long packetExpiration) {
-        IPacket packet = null;
+    private Packet createPacket(int packetID, int length, int id, int delay, long packetExpiration) {
+        Packet packet = new Packet();
         switch (packetID) {
             case 1:
-                packet = new Dummy();
+                packet.setType(Type.Dummy);
                 break;
             case 2:
-                packet = new Cancel();
+                packet.setType(Type.Cancel);
                 break;
-
             default:
                 break;
 

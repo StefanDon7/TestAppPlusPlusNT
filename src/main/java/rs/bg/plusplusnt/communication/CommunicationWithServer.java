@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import rs.bg.plusplusnt.bytehandler.PacketMaker;
-import rs.bg.plusplusnt.domen.IPacket;
+import rs.bg.plusplusnt.domen.Packet;
 
 
 /**
@@ -82,13 +82,13 @@ public class CommunicationWithServer {
         return in.readByte();
     }
 
-    public void bringPacketBackToServer(IPacket packet) throws IOException {
+    public void bringPacketBackToServer(Packet packet) throws IOException {
         out = new DataOutputStream(socketForCommunitation.getOutputStream());
         out.write(packet.getPacketArray());
         System.out.println("Packet with id:" + packet.getID() + " bring back to server.");
     }
 
-    public void sendMessageToServer(IPacket packet) throws IOException {
+    public void sendMessageToServer(Packet packet) throws IOException {
         out = new DataOutputStream(socketForCommunitation.getOutputStream());
         out.writeBytes("Packet with id:" + packet.getID() + " has expired.");
         System.out.println("Packet with id:" + packet.getID() + " has expired.");

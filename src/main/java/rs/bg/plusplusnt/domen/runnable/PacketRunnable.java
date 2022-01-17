@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
 import rs.bg.plusplusnt.db.controller.ControllerDB;
-import rs.bg.plusplusnt.domen.IPacket;
+import rs.bg.plusplusnt.domen.Packet;
 
 /**
  *
@@ -18,17 +18,17 @@ import rs.bg.plusplusnt.domen.IPacket;
  */
 public class PacketRunnable implements Runnable {
 
-    private IPacket packet;
+    private Packet packet;
 
-    public PacketRunnable(IPacket packet) {
+    public PacketRunnable(Packet packet) {
         this.packet = packet;
     }
 
-    public IPacket getPacket() {
+    public Packet getPacket() {
         return packet;
     }
 
-    public void setPacket(IPacket packet) {
+    public void setPacket(Packet packet) {
         this.packet = packet;
     }
 

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
 import rs.bg.plusplusnt.db.controller.ControllerDB;
-import rs.bg.plusplusnt.domen.IPacket;
+import rs.bg.plusplusnt.domen.Packet;
 import rs.bg.plusplusnt.threadpool.ThreadPoolExecutorThread;
 
 /**
@@ -19,8 +19,8 @@ import rs.bg.plusplusnt.threadpool.ThreadPoolExecutorThread;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        List<IPacket> lista = ControllerDB.getInstance().getAll();
-        for (IPacket packet : lista) {
+        List<Packet> lista = ControllerDB.getInstance().getAll();
+        for (Packet packet : lista) {
             if (packet.hasExpired()) {
                 CommunicationWithServerThread.getInstance().getCommunicationWithServer().sendMessageToServer(packet);
                 ControllerDB.getInstance().deletePacket(packet);

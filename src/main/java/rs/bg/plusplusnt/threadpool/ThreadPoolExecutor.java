@@ -9,7 +9,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import rs.bg.plusplusnt.domen.IPacket;
+import rs.bg.plusplusnt.domen.Packet;
 import rs.bg.plusplusnt.domen.runnable.PacketRunnable;
 
 /**
@@ -31,8 +31,8 @@ public class ThreadPoolExecutor {
     public BlockingQueue<PacketRunnable> getQueue() {
         return queue;
     }
-   public void addToQueue(IPacket iPacket) {
-        ThreadPoolExecutorThread.getInstance().getThreadPoolExecutor().getQueue().add(new PacketRunnable(iPacket));
+   public void addToQueue(Packet packet) {
+        ThreadPoolExecutorThread.getInstance().getThreadPoolExecutor().getQueue().add(new PacketRunnable(packet));
     }
 
 }

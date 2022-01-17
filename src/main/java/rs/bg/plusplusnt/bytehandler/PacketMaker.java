@@ -10,9 +10,7 @@ import java.util.Arrays;
 import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
 import rs.bg.plusplusnt.convertor.Convertor;
 import rs.bg.plusplusnt.db.controller.ControllerDB;
-import rs.bg.plusplusnt.domen.Cancel;
-import rs.bg.plusplusnt.domen.Dummy;
-import rs.bg.plusplusnt.domen.IPacket;
+import rs.bg.plusplusnt.domen.Packet;
 import rs.bg.plusplusnt.domen.Type;
 import rs.bg.plusplusnt.threadpool.ThreadPoolExecutorThread;
 
@@ -22,22 +20,22 @@ import rs.bg.plusplusnt.threadpool.ThreadPoolExecutorThread;
  */
 public class PacketMaker {
 
-    private IPacket packet;
+    private Packet packet;
     private ByteHandler byteHandler=new ByteHandler();
 
     public PacketMaker() {
     }
 
-    public PacketMaker(IPacket packet, ByteHandler byteHandler) {
+    public PacketMaker(Packet packet, ByteHandler byteHandler) {
         this.packet = packet;
         this.byteHandler = byteHandler;
     }
 
-    public IPacket getPacket() {
+    public Packet getPacket() {
         return packet;
     }
 
-    public void setPacket(IPacket packet) {
+    public void setPacket(Packet packet) {
         this.packet = packet;
     }
 
@@ -76,14 +74,14 @@ public class PacketMaker {
             case 1:
                 System.out.println("*****Dummy paket*****");
                 byteHandler.setFull(16);
-                packet = new Dummy();
+                packet = new Packet();
                 packet.setType(Type.Dummy);
                 packet.setPacketID(packetID);
                 break;
             case 2:
                 System.out.println("*****Cancel paket*****");
                 byteHandler.setFull(12);
-                packet = new Cancel();
+                packet = new Packet();
                 packet.setType(Type.Cancel);
                 packet.setPacketID(packetID);
                 break;

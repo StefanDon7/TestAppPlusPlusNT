@@ -8,7 +8,7 @@ package rs.bg.plusplusnt.db.controller;
 import java.util.List;
 import rs.bg.plusplusnt.db.IDBPacket;
 import rs.bg.plusplusnt.db.MySqlDbBrocker;
-import rs.bg.plusplusnt.domen.IPacket;
+import rs.bg.plusplusnt.domen.Packet;
 
 /**
  *
@@ -27,15 +27,15 @@ public class ControllerDB {
         return instance;
     }
 
-    public List<IPacket> getAll() {
+    public List<Packet> getAll() {
         return mySqlDbBrocker.getAll();
     }
 
-    public void savePacket(IPacket packet) {
+    public void savePacket(Packet packet) {
         mySqlDbBrocker.savePacket(packet);
     }
 
-    public void deletePacket(IPacket packet) {
+    public void deletePacket(Packet packet) {
         mySqlDbBrocker.deletePacket(packet);
     }
 
