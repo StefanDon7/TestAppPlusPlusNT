@@ -8,7 +8,8 @@ package rs.bg.plusplusnt.domen.runnable;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import rs.bg.plusplusnt.communication.CommunitationWithServer;
+import rs.bg.plusplusnt.communication.CommunicationWithServer;
+import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
 import rs.bg.plusplusnt.db.controller.ControllerDB;
 import rs.bg.plusplusnt.domen.IPacket;
 
@@ -35,7 +36,7 @@ public class PacketRunnable implements Runnable {
     @Override
     public void run() {
         try {
-            CommunitationWithServer.getInstance().bringPacketBackToServer(packet);
+            CommunicationWithServerThread.getInstance().getCommunicationWithServer().bringPacketBackToServer(packet);
             ControllerDB.getInstance().deletePacket(packet);
         } catch (IOException ex) {
             Logger.getLogger(PacketRunnable.class.getName()).log(Level.SEVERE, null, ex);

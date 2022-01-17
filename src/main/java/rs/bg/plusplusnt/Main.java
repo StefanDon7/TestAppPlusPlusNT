@@ -7,10 +7,10 @@ package rs.bg.plusplusnt;
 
 import java.io.IOException;
 import java.util.List;
-import rs.bg.plusplusnt.communication.CommunitationWithServer;
+import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
 import rs.bg.plusplusnt.db.controller.ControllerDB;
 import rs.bg.plusplusnt.domen.IPacket;
-import rs.bg.plusplusnt.threadpool.ThreadPoolExecutor;
+import rs.bg.plusplusnt.threadpool.ThreadPoolExecutorThread;
 
 /**
  *
@@ -22,15 +22,15 @@ public class Main {
         List<IPacket> lista = ControllerDB.getInstance().getAll();
         for (IPacket packet : lista) {
             if (packet.hasExpired()) {
-                CommunitationWithServer.getInstance().sendMessageToServer(packet);
+                CommunicationWithServerThread.getInstance().getCommunicationWithServer().sendMessageToServer(packet);
                 ControllerDB.getInstance().deletePacket(packet);
             } else {
-                CommunitationWithServer.getInstance().addToQueue(packet);
+                ThreadPoolExecutorThread.getInstance().getThreadPoolExecutor().addToQueue(packet);
                 packet.setNewDelay();
                 System.out.println("Packet with id:" + packet.getID() + " add to queue.");
             }
         }
-        CommunitationWithServer.getInstance().start();
-        ThreadPoolExecutor.getInstance().start();
+        CommunicationWithServerThread.getInstance().start();
+        ThreadPoolExecutorThread.getInstance().start();
     }
 }

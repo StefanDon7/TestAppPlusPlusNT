@@ -9,7 +9,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import rs.bg.plusplusnt.domen.IPacket;
 import rs.bg.plusplusnt.domen.runnable.PacketRunnable;
 
 /**
@@ -18,16 +18,10 @@ import rs.bg.plusplusnt.domen.runnable.PacketRunnable;
  */
 public class ThreadPoolExecutor {
 
-    private static final ThreadPoolExecutor instance = new ThreadPoolExecutor();
-
     private final BlockingQueue<PacketRunnable> queue = new ArrayBlockingQueue<>(50);
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(15);
 
-    private ThreadPoolExecutor() {
-    }
-
-    public static ThreadPoolExecutor getInstance() {
-        return instance;
+    public ThreadPoolExecutor() {
     }
 
     public ScheduledExecutorService getScheduledExecutorService() {
@@ -37,19 +31,8 @@ public class ThreadPoolExecutor {
     public BlockingQueue<PacketRunnable> getQueue() {
         return queue;
     }
-
-    public void start() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    final PacketRunnable packetRunnable = queue.poll();
-                    if (packetRunnable != null) {
-                        scheduledExecutorService.schedule(packetRunnable, packetRunnable.getPacket().getDelay(), TimeUnit.SECONDS);
-                    }
-                }
-            }
-        }).start();
+   public void addToQueue(IPacket iPacket) {
+        ThreadPoolExecutorThread.getInstance().getThreadPoolExecutor().getQueue().add(new PacketRunnable(iPacket));
     }
 
 }

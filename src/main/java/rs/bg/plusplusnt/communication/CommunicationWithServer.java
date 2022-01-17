@@ -11,59 +11,66 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import rs.bg.plusplusnt.convertor.ByteHandler;
-import rs.bg.plusplusnt.db.controller.ControllerDB;
+import rs.bg.plusplusnt.bytehandler.ByteHandler;
+import rs.bg.plusplusnt.bytehandler.PacketMaker;
 import rs.bg.plusplusnt.domen.IPacket;
-import rs.bg.plusplusnt.domen.runnable.PacketRunnable;
-import rs.bg.plusplusnt.threadpool.ThreadPoolExecutor;
+
 
 /**
  *
  * @author Stefan
  */
-public class CommunitationWithServer {
+public class CommunicationWithServer {
 
-    private static final CommunitationWithServer instance = new CommunitationWithServer();
 
-    private ByteHandler byteHandler = new ByteHandler();
+    private PacketMaker packetMaker=new PacketMaker();
     private DataInputStream in;
     private DataOutputStream out;
     private Socket socketForCommunitation;
 
-    private CommunitationWithServer() {
+    public PacketMaker getPacketMaker() {
+        return packetMaker;
+    }
+
+    public void setPacketMaker(PacketMaker packetMaker) {
+        this.packetMaker = packetMaker;
+    }
+
+    public DataInputStream getIn() {
+        return in;
+    }
+
+    public void setIn(DataInputStream in) {
+        this.in = in;
+    }
+
+    public DataOutputStream getOut() {
+        return out;
+    }
+
+    public void setOut(DataOutputStream out) {
+        this.out = out;
+    }
+
+    public Socket getSocketForCommunitation() {
+        return socketForCommunitation;
+    }
+
+    public void setSocketForCommunitation(Socket socketForCommunitation) {
+        this.socketForCommunitation = socketForCommunitation;
+    }
+
+    public CommunicationWithServer() {
         try {
             createConnection();
         } catch (IOException ex) {
-            Logger.getLogger(CommunitationWithServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    public static CommunitationWithServer getInstance() {
-        return instance;
-    }
-
-    public void receivePackages() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        getPacket();
-                    } catch (IOException ex) {
-                        Logger.getLogger(CommunitationWithServer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    System.out.println(byteHandler.getPacket());
-                }
-            }
-        }).start();
-    }
-
-    public void start() {
-        CommunitationWithServer.getInstance().receivePackages();
     }
 
     public void createConnection() throws IOException {
         socketForCommunitation = new Socket("hermes.plusplus.rs", 4000);
+       // socketForCommunitation = new Socket("localhost", 8999);
     }
 
     public void getBytesArrayFromServer(byte[] bytes) throws IOException {
@@ -74,13 +81,6 @@ public class CommunitationWithServer {
     public byte getByteFromServer() throws IOException {
         in = new DataInputStream(socketForCommunitation.getInputStream());
         return in.readByte();
-    }
-
-    public void getPacket() throws IOException {
-        byteHandler.allocationBuffer();
-        byteHandler.setAllAtributes();
-        ControllerDB.getInstance().savePacket(byteHandler.getPacket());
-        addToQueue(byteHandler.getPacket());
     }
 
     public void bringPacketBackToServer(IPacket packet) throws IOException {
@@ -95,7 +95,5 @@ public class CommunitationWithServer {
         System.out.println("Packet with id:" + packet.getID() + " has expired.");
     }
 
-    public void addToQueue(IPacket iPacket) {
-        ThreadPoolExecutor.getInstance().getQueue().add(new PacketRunnable(iPacket));
-    }
+    
 }
