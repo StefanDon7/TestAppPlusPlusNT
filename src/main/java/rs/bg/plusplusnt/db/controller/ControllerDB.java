@@ -17,7 +17,7 @@ import rs.bg.plusplusnt.domen.IPacket;
 public class ControllerDB {
 
     private final static ControllerDB instance = new ControllerDB();
-    IDBPacket mySqlDbBrocker;
+    private IDBPacket mySqlDbBrocker;
 
     private ControllerDB() {
         mySqlDbBrocker = new MySqlDbBrocker();

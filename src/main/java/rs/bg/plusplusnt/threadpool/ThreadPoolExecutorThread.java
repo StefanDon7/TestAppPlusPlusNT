@@ -33,7 +33,7 @@ public class ThreadPoolExecutorThread {
         this.threadPoolExecutor = threadPoolExecutor;
     }
 
-    public void start() {
+    public void getFromQueue() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -45,6 +45,10 @@ public class ThreadPoolExecutorThread {
                 }
             }
         }).start();
+    }
+    
+    public void start(){
+        getFromQueue();
     }
 
 }

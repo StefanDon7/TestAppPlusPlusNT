@@ -8,7 +8,6 @@ package rs.bg.plusplusnt.domen.runnable;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import rs.bg.plusplusnt.communication.CommunicationWithServer;
 import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
 import rs.bg.plusplusnt.db.controller.ControllerDB;
 import rs.bg.plusplusnt.domen.IPacket;
