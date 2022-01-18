@@ -11,9 +11,10 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import rs.bg.plusplusnt.bytehandler.ByteHandler;
 import rs.bg.plusplusnt.bytehandler.PacketMaker;
+import rs.bg.plusplusnt.convertor.Convertor;
 import rs.bg.plusplusnt.domen.Packet;
-
 
 /**
  *
@@ -21,8 +22,8 @@ import rs.bg.plusplusnt.domen.Packet;
  */
 public class CommunicationWithServer {
 
-
-    private PacketMaker packetMaker=new PacketMaker();
+    private PacketMaker packetMaker;
+    private ByteHandler byteHandler;
     private DataInputStream in;
     private DataOutputStream out;
     private Socket socketForCommunitation;
@@ -69,17 +70,47 @@ public class CommunicationWithServer {
 
     public void createConnection() throws IOException {
         socketForCommunitation = new Socket("hermes.plusplus.rs", 4000);
-       // socketForCommunitation = new Socket("localhost", 8999);
-    }
-
-    public void getBytesArrayFromServer(byte[] bytes) throws IOException {
-        in = new DataInputStream(socketForCommunitation.getInputStream());
-        in.read(bytes);
     }
 
     public byte getByteFromServer() throws IOException {
         in = new DataInputStream(socketForCommunitation.getInputStream());
         return in.readByte();
+    }
+
+    public void importByte(byte[] bytes, int start) throws IOException {
+        for (int i = start; i < bytes.length; i++) {
+            bytes[i] = getByteFromServer();
+        }
+    }
+
+    private void getBytesFromStream() throws IOException {
+        byteHandler = new ByteHandler();
+        importByte(byteHandler.getHeader(), 0);
+        switch (Convertor.byteArraytoIntLE(byteHandler.getHeader())) {
+            case 1:
+                byteHandler.setFull(16);
+                break;
+            case 2:
+                byteHandler.setFull(12);
+                break;
+            default:
+                byteHandler.setFull(150);
+                break;
+        }
+        byteHandler.fillHeaderInFullArray();
+        importByte(byteHandler.getFull(), byteHandler.getHeader().length);
+
+    }
+
+    private void makePacketFromBytes() {
+        packetMaker = new PacketMaker(byteHandler);
+        packetMaker.createPacket();
+    }
+
+    public Packet getPacketFromServer() throws IOException {
+        getBytesFromStream();
+        makePacketFromBytes();
+        return packetMaker.getPacket();
     }
 
     public void bringPacketBackToServer(Packet packet) throws IOException {
@@ -94,5 +125,4 @@ public class CommunicationWithServer {
         System.out.println("Packet with id:" + packet.getID() + " has expired.");
     }
 
-    
 }

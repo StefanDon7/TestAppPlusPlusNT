@@ -5,10 +5,8 @@
  */
 package rs.bg.plusplusnt.bytehandler;
 
-import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
-import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
-
 
 /**
  *
@@ -16,18 +14,11 @@ import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
  */
 public class ByteHandler {
 
-    private byte[] header = new byte[4];
+    private final byte[] header = new byte[4];
     private byte[] full;
-
-    public ByteHandler() {
-    }
 
     public byte[] getHeader() {
         return header;
-    }
-
-    public void setHeader(byte[] header) {
-        this.header = header;
     }
 
     public byte[] getFull() {
@@ -38,17 +29,14 @@ public class ByteHandler {
         full = new byte[length];
     }
 
-    public void fillFull() throws IOException {
-        System.arraycopy(header, 0, full, 0, header.length);
-        for (int i = header.length; i < full.length; i++) {
-            full[i] = CommunicationWithServerThread.getInstance().getCommunicationWithServer().getByteFromServer();
-        }
+    public void fillHeaderInFullArray() {
+        ByteBuffer buff = ByteBuffer.wrap(full);
+        buff.put(header);
     }
 
-    public byte[] copyByte(byte[] array, int a, int b) {
-        byte[] returnByteArray = new byte[4];
-        returnByteArray = Arrays.copyOfRange(array, a, b);
-        return returnByteArray;
+    public byte[] cutFromArray(int a, int b) {
+        return Arrays.copyOfRange(full, a, b);
+
     }
 
 }

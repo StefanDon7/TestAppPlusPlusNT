@@ -25,7 +25,7 @@ public class Main {
                 CommunicationWithServerThread.getInstance().getCommunicationWithServer().sendMessageToServer(packet);
                 ControllerDB.getInstance().deletePacket(packet);
             } else {
-                ChargerThreadPool.getInstance().getThreadPool().addToQueue(packet);
+                ChargerThreadPool.getInstance().getPacketQueue().addToQueue(packet);
                 System.out.println("Packet with id:" + packet.getID() + " add to queue.");
             }
         }

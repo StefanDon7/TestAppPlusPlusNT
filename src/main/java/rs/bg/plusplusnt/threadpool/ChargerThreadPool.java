@@ -5,6 +5,8 @@
  */
 package rs.bg.plusplusnt.threadpool;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import rs.bg.plusplusnt.domen.runnable.PacketRunnable;
 
@@ -14,41 +16,35 @@ import rs.bg.plusplusnt.domen.runnable.PacketRunnable;
  */
 public class ChargerThreadPool {
 
-    private ThreadPool threadPool;
+    private final PacketQueue packetQueue;
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(15);
     private final static ChargerThreadPool instance = new ChargerThreadPool();
 
     private ChargerThreadPool() {
-        threadPool = new ThreadPool();
+        packetQueue = new PacketQueue();
     }
 
     public static ChargerThreadPool getInstance() {
         return instance;
     }
 
-    public ThreadPool getThreadPool() {
-        return threadPool;
+    public PacketQueue getPacketQueue() {
+        return packetQueue;
     }
 
-    public void setThreadPool(ThreadPool threadPool) {
-        this.threadPool = threadPool;
-    }
-
-    public void getFromQueue() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    final PacketRunnable packetRunnable = threadPool.getQueue().poll();
-                    if (packetRunnable != null) {
-                        threadPool.getScheduledExecutorService().schedule(packetRunnable, packetRunnable.getPacket().getTimeToExecute(), TimeUnit.MILLISECONDS);
-                    }
+    public void addToSchedule() {
+        new Thread(() -> {
+            while (true) {
+                final PacketRunnable packetRunnable = getPacketQueue().getQueue().poll();
+                if (packetRunnable != null) {
+                    scheduledExecutorService.schedule(packetRunnable, packetRunnable.getPacket().getTimeToExecute(), TimeUnit.MILLISECONDS);
                 }
             }
         }).start();
     }
 
     public void start() {
-        getFromQueue();
+        addToSchedule();
     }
 
 }
