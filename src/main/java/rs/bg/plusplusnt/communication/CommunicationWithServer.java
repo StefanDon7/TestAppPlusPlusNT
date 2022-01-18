@@ -21,7 +21,7 @@ import rs.bg.plusplusnt.file.SettingsLoader;
  *
  * @author Stefan
  */
-public class CommunicationWithServer {
+public class CommunicationWithServer implements CommunicationService {
 
     private PacketMaker packetMaker;
     private ByteHandler byteHandler;
@@ -102,30 +102,44 @@ public class CommunicationWithServer {
                 break;
         }
         importByte(byteHandler.getFull(), byteHandler.getHeader().length);
-
     }
 
-    private void makePacketFromBytes() {
+    private void makePacketOfBytes() {
         packetMaker = new PacketMaker(byteHandler);
         packetMaker.createPacket();
     }
 
-    public Packet getPacketFromServer() throws IOException {
-        getBytesFromStream();
-        makePacketFromBytes();
+    @Override
+    public Packet getPacketFromServer() {
+        try {
+            getBytesFromStream();
+        } catch (IOException ex) {
+            Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        makePacketOfBytes();
         return packetMaker.getPacket();
     }
 
-    public void bringPacketBackToServer(Packet packet) throws IOException {
-        out = new DataOutputStream(socketForCommunitation.getOutputStream());
-        out.write(packet.getPacketArray());
-        System.out.println("Packet with id:" + packet.getID() + " bring back to server.");
+    @Override
+    public void bringPacketBackToServer(Packet packet) {
+        try {
+            out = new DataOutputStream(socketForCommunitation.getOutputStream());
+            out.write(packet.getPacketArray());
+            System.out.println("Packet with id:" + packet.getID() + " bring back to server.");
+        } catch (IOException ex) {
+            Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public void sendMessageToServer(Packet packet) throws IOException {
-        out = new DataOutputStream(socketForCommunitation.getOutputStream());
-        out.writeBytes("Packet with id:" + packet.getID() + " has expired.");
-        System.out.println("Packet with id:" + packet.getID() + " has expired.");
+    @Override
+    public void sendMessageToServer(Packet packet) {
+        try {
+            out = new DataOutputStream(socketForCommunitation.getOutputStream());
+            out.writeBytes("Packet with id:" + packet.getID() + " has expired.");
+            System.out.println("Packet with id:" + packet.getID() + " has expired.");
+        } catch (IOException ex) {
+            Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

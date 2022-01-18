@@ -34,13 +34,8 @@ public class PacketRunnable implements Runnable {
 
     @Override
     public void run() {
-        try {
-            CommunicationWithServerThread.getInstance().getCommunicationWithServer().bringPacketBackToServer(packet);
-            ControllerDB.getInstance().deletePacket(packet);
-        } catch (IOException ex) {
-            Logger.getLogger(PacketRunnable.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+        CommunicationWithServerThread.getInstance().getCommunicationService().bringPacketBackToServer(packet);
+        ControllerDB.getInstance().deletePacket(packet);
     }
 
 }

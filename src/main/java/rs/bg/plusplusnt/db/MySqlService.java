@@ -23,7 +23,7 @@ import rs.bg.plusplusnt.file.SettingsLoader;
  *
  * @author Stefan
  */
-public class MySQLBrocker implements DBService {
+public final class MySqlService implements DBService {
 
     private Connection connection;
 
@@ -31,7 +31,7 @@ public class MySQLBrocker implements DBService {
         return connection;
     }
 
-    public MySQLBrocker() {
+    public MySqlService() {
         loadDriver();
         openConnection();
     }
@@ -40,7 +40,7 @@ public class MySQLBrocker implements DBService {
         try {
             Class.forName(SettingsLoader.getInstance().getDatabaseProperty("driver"));
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySqlService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -49,10 +49,10 @@ public class MySQLBrocker implements DBService {
             String dbUrl = SettingsLoader.getInstance().getDatabaseProperty("url");
             String dbUser = SettingsLoader.getInstance().getDatabaseProperty("user");
             String dbPassword = SettingsLoader.getInstance().getDatabaseProperty("password");
-            connection = DriverManager.getConnection(dbUrl,dbUser,dbPassword);
+            connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
             connection.setAutoCommit(false);
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySqlService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -60,7 +60,7 @@ public class MySQLBrocker implements DBService {
         try {
             connection.commit();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySqlService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -68,7 +68,7 @@ public class MySQLBrocker implements DBService {
         try {
             connection.rollback();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySqlService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -76,7 +76,7 @@ public class MySQLBrocker implements DBService {
         try {
             connection.close();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySqlService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -84,13 +84,9 @@ public class MySQLBrocker implements DBService {
     public List<Packet> getAll() {
         String query = "select * from packet";
         List<Packet> list = new ArrayList();
-        Statement statement = null;
         try {
+            Statement statement;
             statement = connection.createStatement();
-        } catch (SQLException ex) {
-            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
                 int id = rs.getInt("id");
@@ -100,10 +96,9 @@ public class MySQLBrocker implements DBService {
                 long packetExpiration = rs.getLong("packetExpiration");
                 Packet packet = createPacket(packetID, length, id, delay, packetExpiration);
                 list.add(packet);
-
             }
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySqlService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return list;
     }
@@ -111,22 +106,15 @@ public class MySQLBrocker implements DBService {
     @Override
     public void savePacket(Packet packet) {
         String query = "insert into packet (id, lengthPacket, packetid, delay, packetExpiration) values (?, ?, ?, ?, ?)";
-        PreparedStatement preparedStatement = null;
+
         try {
+            PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement(query);
-        } catch (SQLException ex) {
-            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
             preparedStatement.setInt(1, packet.getID());
             preparedStatement.setInt(2, packet.getLength());
             preparedStatement.setInt(3, packet.getPacketID());
             preparedStatement.setInt(4, packet.getDelay());
             preparedStatement.setLong(5, packet.getPacketExpiration());
-        } catch (SQLException ex) {
-            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
             preparedStatement.execute();
             commit();
         } catch (SQLException ex) {
@@ -135,20 +123,13 @@ public class MySQLBrocker implements DBService {
     }
 
     @Override
+    @SuppressWarnings("empty-statement")
     public void deletePacket(Packet packet) {
         String query = "delete from packet where id = ?";
-        PreparedStatement preparedStatement = null;
         try {
+            PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement(query);
-        } catch (SQLException ex) {
-            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
             preparedStatement.setInt(1, packet.getID());
-        } catch (SQLException ex) {
-            Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
             preparedStatement.execute();
             commit();
             System.out.println("Packet with id:" + packet.getID() + " has been deleted from the database!");

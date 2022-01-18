@@ -22,7 +22,7 @@ public class Main {
         List<Packet> lista = ControllerDB.getInstance().getAll();
         for (Packet packet : lista) {
             if (packet.hasExpired()) {
-                CommunicationWithServerThread.getInstance().getCommunicationWithServer().sendMessageToServer(packet);
+                CommunicationWithServerThread.getInstance().getCommunicationService().sendMessageToServer(packet);
                 ControllerDB.getInstance().deletePacket(packet);
             } else {
                 ChargerThreadPool.getInstance().getPacketQueue().addToQueue(packet);
