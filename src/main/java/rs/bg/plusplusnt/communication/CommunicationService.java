@@ -16,4 +16,5 @@ public interface CommunicationService {
     Packet getPacketFromServer();
     void sendMessageToServer(Packet packet);
     void bringPacketBackToServer(Packet packet);
+    void checkUnsendPacketFromDatabase();
 }

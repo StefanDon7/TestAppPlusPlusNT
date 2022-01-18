@@ -6,10 +6,7 @@
 package rs.bg.plusplusnt;
 
 import java.io.IOException;
-import java.util.List;
 import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
-import rs.bg.plusplusnt.db.controller.ControllerDB;
-import rs.bg.plusplusnt.domen.Packet;
 import rs.bg.plusplusnt.threadpool.ChargerThreadPool;
 
 /**
@@ -19,16 +16,7 @@ import rs.bg.plusplusnt.threadpool.ChargerThreadPool;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        List<Packet> lista = ControllerDB.getInstance().getAll();
-        for (Packet packet : lista) {
-            if (packet.hasExpired()) {
-                CommunicationWithServerThread.getInstance().getCommunicationService().sendMessageToServer(packet);
-                ControllerDB.getInstance().deletePacket(packet);
-            } else {
-                ChargerThreadPool.getInstance().getPacketQueue().addToQueue(packet);
-                System.out.println("Packet with id:" + packet.getID() + " add to queue.");
-            }
-        }
+        CommunicationWithServerThread.getInstance().getCommunicationService().checkUnsendPacketFromDatabase();
         CommunicationWithServerThread.getInstance().start();
         ChargerThreadPool.getInstance().start();
     }

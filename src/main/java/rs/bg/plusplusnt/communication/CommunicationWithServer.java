@@ -9,13 +9,17 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
 import rs.bg.plusplusnt.makers.ByteHandler;
 import rs.bg.plusplusnt.makers.PacketMaker;
 import rs.bg.plusplusnt.convertor.Convertor;
+import rs.bg.plusplusnt.db.controller.ControllerDB;
 import rs.bg.plusplusnt.domen.Packet;
 import rs.bg.plusplusnt.file.SettingsLoader;
+import rs.bg.plusplusnt.threadpool.ChargerThreadPool;
 
 /**
  *
@@ -139,6 +143,20 @@ public class CommunicationWithServer implements CommunicationService {
             System.out.println("Packet with id:" + packet.getID() + " has expired.");
         } catch (IOException ex) {
             Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void checkUnsendPacketFromDatabase() {
+        List<Packet> lista = ControllerDB.getInstance().getAll();
+        for (Packet packet : lista) {
+            if (packet.hasExpired()) {
+                sendMessageToServer(packet);
+                ControllerDB.getInstance().deletePacket(packet);
+            } else {
+                ChargerThreadPool.getInstance().getPacketQueue().addToQueue(packet);
+                System.out.println("Packet with id:" + packet.getID() + " add to queue.");
+            }
         }
     }
 
