@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import rs.bg.plusplusnt.domen.Packet;
 import rs.bg.plusplusnt.domen.Type;
+import rs.bg.plusplusnt.file.SettingsLoader;
 
 /**
  *
@@ -37,7 +38,7 @@ public class MySQLBrocker implements DBService {
 
     public void loadDriver() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName(SettingsLoader.getInstance().getDatabaseProperty("driver"));
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -45,7 +46,10 @@ public class MySQLBrocker implements DBService {
 
     public void openConnection() {
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/plusplusnt", "root", "");
+            String dbUrl = SettingsLoader.getInstance().getDatabaseProperty("url");
+            String dbUser = SettingsLoader.getInstance().getDatabaseProperty("user");
+            String dbPassword = SettingsLoader.getInstance().getDatabaseProperty("password");
+            connection = DriverManager.getConnection(dbUrl,dbUser,dbPassword);
             connection.setAutoCommit(false);
         } catch (SQLException ex) {
             Logger.getLogger(MySQLBrocker.class.getName()).log(Level.SEVERE, null, ex);

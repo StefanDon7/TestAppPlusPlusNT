@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package rs.bg.plusplusnt.bytehandler;
+package rs.bg.plusplusnt.makers;
 
 import rs.bg.plusplusnt.convertor.Convertor;
 import rs.bg.plusplusnt.domen.Packet;
