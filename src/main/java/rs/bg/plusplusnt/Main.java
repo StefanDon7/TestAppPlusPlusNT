@@ -17,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         CommunicationWithServerThread.getInstance().getCommunicationService().checkUnsendPacketFromDatabase();
-        CommunicationWithServerThread.getInstance().start();
-        ChargerThreadPool.getInstance().start();
+        CommunicationWithServerThread.getInstance().startThread();
+        ChargerThreadPool.getInstance().startTread();
     }
 }

@@ -43,7 +43,7 @@ public class ChargerThreadPool {
         }).start();
     }
 
-    public void start() {
+    public void startTread() {
         addToSchedule();
     }
 
