@@ -22,12 +22,4 @@ public class Convertor {
         return ByteBuffer.wrap(byteBarray).order(ByteOrder.LITTLE_ENDIAN).getInt();
     }
 
-    public static byte[] intToByteArrayBE(int myInteger) {
-        return ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(myInteger).array();
-    }
-
-    public static int byteArraytoIntBE(byte[] byteBarray) {
-        return ByteBuffer.wrap(byteBarray).order(ByteOrder.BIG_ENDIAN).getInt();
-    }
-
 }

@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import rs.bg.plusplusnt.domen.Packet;
 import rs.bg.plusplusnt.domen.Type;
-import rs.bg.plusplusnt.file.SettingsLoader;
+import rs.bg.plusplusnt.filereader.SettingsLoader;
 
 /**
  *
@@ -41,6 +41,7 @@ public final class MySqlService implements DBService {
             Class.forName(SettingsLoader.getInstance().getDatabaseProperty("driver"));
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(MySqlService.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -53,6 +54,7 @@ public final class MySqlService implements DBService {
             connection.setAutoCommit(false);
         } catch (SQLException ex) {
             Logger.getLogger(MySqlService.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -61,6 +63,7 @@ public final class MySqlService implements DBService {
             connection.commit();
         } catch (SQLException ex) {
             Logger.getLogger(MySqlService.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -69,6 +72,7 @@ public final class MySqlService implements DBService {
             connection.rollback();
         } catch (SQLException ex) {
             Logger.getLogger(MySqlService.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -77,6 +81,7 @@ public final class MySqlService implements DBService {
             connection.close();
         } catch (SQLException ex) {
             Logger.getLogger(MySqlService.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -106,7 +111,6 @@ public final class MySqlService implements DBService {
     @Override
     public void savePacket(Packet packet) {
         String query = "insert into packet (id, lengthPacket, packetid, delay, packetExpiration) values (?, ?, ?, ?, ?)";
-
         try {
             PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement(query);

@@ -33,29 +33,25 @@ public class CommunicationWithServerThread {
     }
 
     public void receivePackages() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    Packet packet = communicationService.getPacketFromServer();
-                    if (packet != null) {
-                        switch (packet.getType()) {
-                            case Dummy:
-                                ControllerDB.getInstance().savePacket(packet);
-                                ChargerThreadPool.getInstance().getPacketQueue().addToQueue(packet);
-                                break;
-                            case Cancel:
-                                communicationService.bringPacketBackToServer(packet);
-                                break;
-                            default:
-                                break;
-                        }
-                        System.out.println(packet);
+        new Thread(() -> {
+            while (true) {
+                Packet packet = communicationService.getPacketFromServer();
+                if (packet != null) {
+                    switch (packet.getType()) {
+                        case Dummy:
+                            ControllerDB.getInstance().savePacket(packet);
+                            ChargerThreadPool.getInstance().getPacketQueue().addToQueue(packet);
+                            break;
+                        case Cancel:
+                            communicationService.bringPacketBackToServer(packet);
+                            break;
+                        default:
+                            break;
                     }
+                    System.out.println(packet);
                 }
             }
-        }
-        ).start();
+        }).start();
     }
 
     public void startThread() {

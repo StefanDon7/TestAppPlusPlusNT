@@ -17,7 +17,7 @@ import rs.bg.plusplusnt.makers.PacketMaker;
 import rs.bg.plusplusnt.convertor.Convertor;
 import rs.bg.plusplusnt.db.controller.ControllerDB;
 import rs.bg.plusplusnt.domen.Packet;
-import rs.bg.plusplusnt.file.SettingsLoader;
+import rs.bg.plusplusnt.filereader.SettingsLoader;
 import rs.bg.plusplusnt.threadpool.ChargerThreadPool;
 
 /**
@@ -32,44 +32,16 @@ public class CommunicationWithServer implements CommunicationService {
     private DataOutputStream out;
     private Socket socketForCommunitation;
 
-    public PacketMaker getPacketMaker() {
-        return packetMaker;
-    }
-
-    public void setPacketMaker(PacketMaker packetMaker) {
-        this.packetMaker = packetMaker;
-    }
-
-    public DataInputStream getIn() {
-        return in;
-    }
-
-    public void setIn(DataInputStream in) {
-        this.in = in;
-    }
-
-    public DataOutputStream getOut() {
-        return out;
-    }
-
-    public void setOut(DataOutputStream out) {
-        this.out = out;
-    }
-
-    public Socket getSocketForCommunitation() {
-        return socketForCommunitation;
-    }
-
-    public void setSocketForCommunitation(Socket socketForCommunitation) {
-        this.socketForCommunitation = socketForCommunitation;
-    }
-
     public CommunicationWithServer() {
         try {
             createConnection();
         } catch (IOException ex) {
             Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void setSocketForCommunitation(Socket socketForCommunitation) {
+        this.socketForCommunitation = socketForCommunitation;
     }
 
     public void createConnection() throws IOException {
@@ -84,15 +56,15 @@ public class CommunicationWithServer implements CommunicationService {
         return in.readByte();
     }
 
-    public void importByte(byte[] bytes, int start) throws IOException {
+    public void getByteFromStream(byte[] bytes, int start) throws IOException {
         for (int i = start; i < bytes.length; i++) {
             bytes[i] = getByteFromServer();
         }
     }
 
-    private void getBytesFromStream() throws IOException {
+    private void createByteHandler() throws IOException {
         byteHandler = new ByteHandler();
-        importByte(byteHandler.getHeader(), 0);
+        getByteFromStream(byteHandler.getHeader(), 0);
         switch (Convertor.byteArraytoIntLE(byteHandler.getHeader())) {
             case 1:
                 byteHandler.setFull(16);
@@ -104,10 +76,10 @@ public class CommunicationWithServer implements CommunicationService {
                 byteHandler.setFull(256);
                 break;
         }
-        importByte(byteHandler.getFull(), byteHandler.getHeader().length);
+        getByteFromStream(byteHandler.getFull(), byteHandler.getHeader().length);
     }
 
-    private void makePacketOfBytes() {
+    private void createPacketMaker() {
         packetMaker = new PacketMaker(byteHandler);
         packetMaker.createPacket();
     }
@@ -115,27 +87,32 @@ public class CommunicationWithServer implements CommunicationService {
     @Override
     public Packet getPacketFromServer() {
         try {
-            getBytesFromStream();
-            makePacketOfBytes();
+            createByteHandler();
+            createPacketMaker();
             return packetMaker.getPacket();
         } catch (IOException ex) {
-            try {
-                socketForCommunitation.close();
-                while (socketForCommunitation.isClosed()) {
-                    try {
-                        createConnection();
-                        Thread.sleep(5000);
-                    } catch (IOException ex1) {
-                        System.out.println("Trying to get connection.");
-                    } catch (InterruptedException ex1) {
-                        Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex1);
-                    }
-                }
-            } catch (IOException ex1) {
-                Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex1);
-            }
-        } 
+            recoverConnection();
+            checkUnsendPacketFromDatabase();
+        }
         return null;
+    }
+
+    private void recoverConnection() {
+        try {
+            socketForCommunitation.close();
+            while (socketForCommunitation.isClosed()) {
+                try {
+                    createConnection();
+                    Thread.sleep(1000);
+                } catch (IOException ex1) {
+                    System.out.println("Trying to get connection...");
+                } catch (InterruptedException ex1) {
+                    Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex1);
+                }
+            }
+        } catch (IOException ex1) {
+            Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex1);
+        }
     }
 
     @Override
@@ -145,7 +122,9 @@ public class CommunicationWithServer implements CommunicationService {
             out.write(packet.getPacketArray());
             System.out.println("Packet with id:" + packet.getID() + " bring back to server.");
         } catch (IOException ex) {
-            Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger logger = Logger.getLogger(CommunicationWithServer.class.getName());
+            logger.log(Level.INFO, "Packet with id:" + packet.getPacketID() + " unsuccessful sent to server!");
+            throw new RuntimeException(ex);
         }
     }
 
@@ -156,7 +135,8 @@ public class CommunicationWithServer implements CommunicationService {
             out.writeBytes("Packet with id:" + packet.getID() + " has expired.");
             System.out.println("Packet with id:" + packet.getID() + " has expired.");
         } catch (IOException ex) {
-            Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger logger = Logger.getLogger(CommunicationWithServer.class.getName());
+            logger.log(Level.INFO, "Unsuccessful send notification to server.");
         }
     }
 
@@ -173,5 +153,4 @@ public class CommunicationWithServer implements CommunicationService {
             }
         }
     }
-
 }
