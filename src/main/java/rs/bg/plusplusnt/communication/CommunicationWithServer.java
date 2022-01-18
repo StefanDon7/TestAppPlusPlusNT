@@ -124,7 +124,7 @@ public class CommunicationWithServer implements CommunicationService {
                 while (socketForCommunitation.isClosed()) {
                     try {
                         createConnection();
-                        Thread.sleep(1000);
+                        Thread.sleep(5000);
                     } catch (IOException ex1) {
                         System.out.println("Trying to get connection.");
                     } catch (InterruptedException ex1) {

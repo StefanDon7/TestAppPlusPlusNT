@@ -36,7 +36,7 @@ public class SettingsLoader {
     private void loadProperties() {
         try {
             databaseProperties = new Properties();
-            databaseProperties.load(new FileReader(new File("database.properties")));
+            databaseProperties.load(new FileReader(new File("settings.properties")));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SettingsLoader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
