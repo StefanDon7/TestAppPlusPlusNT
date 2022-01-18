@@ -24,35 +24,35 @@ import rs.bg.plusplusnt.threadpool.ChargerThreadPool;
  *
  * @author Stefan
  */
-public class CommunicationWithServer implements CommunicationService {
+public class TCPCommunitation implements CommunicationService {
 
     private PacketMaker packetMaker;
     private ByteHandler byteHandler;
     private DataInputStream in;
     private DataOutputStream out;
-    private Socket socketForCommunitation;
+    private Socket socket;
 
-    public CommunicationWithServer() {
+    public TCPCommunitation() {
         try {
             createConnection();
         } catch (IOException ex) {
-            Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TCPCommunitation.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void setSocketForCommunitation(Socket socketForCommunitation) {
-        this.socketForCommunitation = socketForCommunitation;
+    public Socket getSocket() {
+        return socket;
     }
 
     public void createConnection() throws IOException {
         String serverURL = SettingsLoader.getInstance().getDatabaseProperty("serverURL");
         String serverPortString = SettingsLoader.getInstance().getDatabaseProperty("serverPort");
         int serverPort = Integer.parseInt(serverPortString);
-        socketForCommunitation = new Socket(serverURL, serverPort);
+        socket = new Socket(serverURL, serverPort);
     }
 
     public byte getByteFromServer() throws IOException {
-        in = new DataInputStream(socketForCommunitation.getInputStream());
+        in = new DataInputStream(socket.getInputStream());
         return in.readByte();
     }
 
@@ -99,30 +99,30 @@ public class CommunicationWithServer implements CommunicationService {
 
     private void recoverConnection() {
         try {
-            socketForCommunitation.close();
-            while (socketForCommunitation.isClosed()) {
+            socket.close();
+            while (socket.isClosed()) {
                 try {
                     createConnection();
                     Thread.sleep(1000);
                 } catch (IOException ex1) {
                     System.out.println("Trying to get connection...");
                 } catch (InterruptedException ex1) {
-                    Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex1);
+                    Logger.getLogger(TCPCommunitation.class.getName()).log(Level.SEVERE, null, ex1);
                 }
             }
         } catch (IOException ex1) {
-            Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex1);
+            Logger.getLogger(TCPCommunitation.class.getName()).log(Level.SEVERE, null, ex1);
         }
     }
 
     @Override
     public void bringPacketBackToServer(Packet packet) {
         try {
-            out = new DataOutputStream(socketForCommunitation.getOutputStream());
+            out = new DataOutputStream(socket.getOutputStream());
             out.write(packet.getPacketArray());
             System.out.println("Packet with id:" + packet.getID() + " bring back to server.");
         } catch (IOException ex) {
-            Logger logger = Logger.getLogger(CommunicationWithServer.class.getName());
+            Logger logger = Logger.getLogger(TCPCommunitation.class.getName());
             logger.log(Level.INFO, "Packet with id:" + packet.getPacketID() + " unsuccessful sent to server!");
             throw new RuntimeException(ex);
         }
@@ -131,11 +131,11 @@ public class CommunicationWithServer implements CommunicationService {
     @Override
     public void sendMessageToServer(Packet packet) {
         try {
-            out = new DataOutputStream(socketForCommunitation.getOutputStream());
+            out = new DataOutputStream(socket.getOutputStream());
             out.writeBytes("Packet with id:" + packet.getID() + " has expired.");
             System.out.println("Packet with id:" + packet.getID() + " has expired.");
         } catch (IOException ex) {
-            Logger logger = Logger.getLogger(CommunicationWithServer.class.getName());
+            Logger logger = Logger.getLogger(TCPCommunitation.class.getName());
             logger.log(Level.INFO, "Unsuccessful send notification to server.");
         }
     }

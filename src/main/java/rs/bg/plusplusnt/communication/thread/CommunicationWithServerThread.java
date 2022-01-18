@@ -6,7 +6,7 @@
 package rs.bg.plusplusnt.communication.thread;
 
 import rs.bg.plusplusnt.communication.CommunicationService;
-import rs.bg.plusplusnt.communication.CommunicationWithServer;
+import rs.bg.plusplusnt.communication.TCPCommunitation;
 import rs.bg.plusplusnt.db.controller.ControllerDB;
 import rs.bg.plusplusnt.domen.Packet;
 import rs.bg.plusplusnt.threadpool.ChargerThreadPool;
@@ -21,7 +21,8 @@ public class CommunicationWithServerThread {
     private CommunicationService communicationService;
 
     private CommunicationWithServerThread() {
-        communicationService = new CommunicationWithServer();
+        communicationService = new TCPCommunitation();
+        
     }
 
     public CommunicationService getCommunicationService() {
