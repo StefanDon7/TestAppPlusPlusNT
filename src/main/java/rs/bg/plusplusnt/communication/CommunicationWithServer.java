@@ -15,6 +15,7 @@ import rs.bg.plusplusnt.makers.ByteHandler;
 import rs.bg.plusplusnt.makers.PacketMaker;
 import rs.bg.plusplusnt.convertor.Convertor;
 import rs.bg.plusplusnt.domen.Packet;
+import rs.bg.plusplusnt.file.SettingsLoader;
 
 /**
  *
@@ -69,7 +70,10 @@ public class CommunicationWithServer {
     }
 
     public void createConnection() throws IOException {
-        socketForCommunitation = new Socket("hermes.plusplus.rs", 4000);
+        String serverURL = SettingsLoader.getInstance().getDatabaseProperty("serverURL");
+        String serverPortString = SettingsLoader.getInstance().getDatabaseProperty("serverPort");
+        int serverPort = Integer.parseInt(serverPortString);
+        socketForCommunitation = new Socket(serverURL, serverPort);
     }
 
     public byte getByteFromServer() throws IOException {
@@ -94,10 +98,9 @@ public class CommunicationWithServer {
                 byteHandler.setFull(12);
                 break;
             default:
-                byteHandler.setFull(150);
+                byteHandler.setFull(256);
                 break;
         }
-        byteHandler.fillHeaderInFullArray();
         importByte(byteHandler.getFull(), byteHandler.getHeader().length);
 
     }

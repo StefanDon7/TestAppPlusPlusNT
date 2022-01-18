@@ -27,9 +27,10 @@ public class ByteHandler {
 
     public void setFull(int length) {
         full = new byte[length];
+        fillHeaderInFullArray();
     }
 
-    public void fillHeaderInFullArray() {
+    private void fillHeaderInFullArray() {
         ByteBuffer buff = ByteBuffer.wrap(full);
         buff.put(header);
     }
