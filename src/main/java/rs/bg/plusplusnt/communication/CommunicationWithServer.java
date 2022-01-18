@@ -12,7 +12,6 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import rs.bg.plusplusnt.communication.thread.CommunicationWithServerThread;
 import rs.bg.plusplusnt.makers.ByteHandler;
 import rs.bg.plusplusnt.makers.PacketMaker;
 import rs.bg.plusplusnt.convertor.Convertor;
@@ -117,11 +116,26 @@ public class CommunicationWithServer implements CommunicationService {
     public Packet getPacketFromServer() {
         try {
             getBytesFromStream();
+            makePacketOfBytes();
+            return packetMaker.getPacket();
         } catch (IOException ex) {
-            Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        makePacketOfBytes();
-        return packetMaker.getPacket();
+            try {
+                socketForCommunitation.close();
+                while (socketForCommunitation.isClosed()) {
+                    try {
+                        createConnection();
+                        Thread.sleep(1000);
+                    } catch (IOException ex1) {
+                        System.out.println("Trying to get connection.");
+                    } catch (InterruptedException ex1) {
+                        Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex1);
+                    }
+                }
+            } catch (IOException ex1) {
+                Logger.getLogger(CommunicationWithServer.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+        } 
+        return null;
     }
 
     @Override
